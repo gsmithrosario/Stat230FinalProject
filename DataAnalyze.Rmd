@@ -1,0 +1,63 @@
+---
+title: "DataAnalyze"
+author: "Gabi Smith-Rosario"
+date: "4/15/2018"
+output: html_document
+---
+
+```{r, include=FALSE}
+require(mosaic);require(leaps); require(car); require(MASS)
+```
+
+```{r}
+
+rodents3 <- as.numeric(rodents2[,()])
+
+#CHECK for multicollinearity
+fmfull<-lm(MaxLongevitym~.,data=rodents2)
+summary(fmfull)
+vif(fmfull)
+```
+
+
+```{r}
+rodents2$MaxLongevitym = as.numeric(rodents2$MaxLongevitym)
+rodents2$BasalMetRatemLOhr = as.numeric(rodents2$BasalMetRatemLOhr)
+rodents2$GestationLend = as.numeric(rodents2$GestationLend)
+rodents2$AgeatEyeOpeningd = as.numeric(rodents2$AgeatEyeOpeningd)
+rodents2$AdultBodyMassg = as.numeric(rodents2$AdultBodyMassg)
+rodents2$LitterSize = as.numeric(rodents2$LitterSize)
+rodents2$LittersPerYear = as.numeric(rodents2$LittersPerYear)
+rodents2$HuPopDenpnkm = as.numeric(rodents2$HuPopDenpnkm)
+
+
+
+mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+ BasalMetRatemLOhr:AgeatEyeOpeningd+AgeatEyeOpeningd, data = rodents2)
+plot(mod1,which=1)
+plot(mod1,which=2)
+summary(mod1)
+anova(mod1)
+```
+
+```{r}
+rodents3 <- na.omit(rodents2)
+modsmall<-lm(MaxLongevitym~1,data=rodents3)
+fmfull <- lm(MaxLongevitym ~ BasalMetRatemLOhr + GestationLend + AgeatEyeOpeningd + AdultBodyMassg + LitterSize + LittersPerYear + HuPopDenpnkm, data = rodents3)
+stepAIC(modsmall,scope=list(upper=fmfull, lower=~1), direction="both",trace=FALSE)$anova
+```
+
+
+```{r}
+confint(mod1)
+```
+
+```{r bootstrap}
+#Check if we really need BasalMetRatemLOhr in the model
+set.seed(293)
+bootstrap <- do(1000) * lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend + AgeatEyeOpeningd, data=rodents2[mosaic::resample(1:nrow(rodents2)),])$coefficients
+densityplot(~BasalMetRatemLOhr, data=bootstrap)
+ladd(panel.abline(v=mod1$coefficients["BasalMetRatemLOhr"], col="red", lwd=3))
+
+```
+
+
