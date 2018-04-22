@@ -1,6 +1,6 @@
 ---
 title: "DataAnalyze"
-author: "Gabi Smith-Rosario"
+author: "Gabi Smith-Rosario and Andrea Boskovic"
 date: "4/15/2018"
 output: html_document
 ---
@@ -10,39 +10,84 @@ require(mosaic);require(leaps); require(car); require(MASS)
 ```
 
 ```{r}
-rodents3 <- as.numeric(rodents2[,()])
+summary(RodentsP)
+```
 
-#CHECK for multicollinearity
-fmfull<-lm(MaxLongevitym~.,data=rodents2)
+```{r}
+#CHECK for multicollinearity.. do this
+#throw in the kitchen sink
+#not working??
+fmfull <- lm(MaxLongevitym~.,data=RodentsP)
 summary(fmfull)
 vif(fmfull)
 ```
 
-
 ```{r}
-rodents2$MaxLongevitym = as.numeric(rodents2$MaxLongevitym)
-rodents2$BasalMetRatemLOhr = as.numeric(rodents2$BasalMetRatemLOhr)
-rodents2$GestationLend = as.numeric(rodents2$GestationLend)
-rodents2$AgeatEyeOpeningd = as.numeric(rodents2$AgeatEyeOpeningd)
-rodents2$AdultBodyMassg = as.numeric(rodents2$AdultBodyMassg)
-rodents2$LitterSize = as.numeric(rodents2$LitterSize)
-rodents2$LittersPerYear = as.numeric(rodents2$LittersPerYear)
-rodents2$HuPopDenpnkm = as.numeric(rodents2$HuPopDenpnkm)
-
-
-
-mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+ BasalMetRatemLOhr:AgeatEyeOpeningd+AgeatEyeOpeningd, data = rodents2)
+RodentsP <- RodentsP[-c(1752), ] #is it worth taking this out.. normality condition gets really bad
+mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
 plot(mod1,which=1)
 plot(mod1,which=2)
 summary(mod1)
 anova(mod1)
+vif(mod1) #big vif??? what now
 ```
 
 ```{r}
-rodents3 <- na.omit(rodents2)
-modsmall<-lm(MaxLongevitym~1,data=rodents3)
-fmfull <- lm(MaxLongevitym ~ BasalMetRatemLOhr + GestationLend + AgeatEyeOpeningd + AdultBodyMassg + LitterSize + LittersPerYear + HuPopDenpnkm, data = rodents3)
-stepAIC(modsmall,scope=list(upper=fmfull, lower=~1), direction="both",trace=FALSE)$anova
+xyplot(MaxLongevitym ~ BasalMetRatemLOhr, type=c("p","r"),data=RodentsP)
+#remove outlier and try again
+which(RodentsP$BasalMetRatemLOhr> 6000)
+RodentsP <- RodentsP[-c(627), ]
+xyplot(MaxLongevitym ~ BasalMetRatemLOhr, type=c("p","r"),data=RodentsP)
+```
+
+```{r}
+xyplot(MaxLongevitym ~ GestationLend, type=c("p","r"), data=RodentsP)
+```
+
+```{r}
+xyplot(MaxLongevitym ~ AgeatEyeOpeningd, type=c("p","r"), data=RodentsP)
+#make an added variable plot bc negative slope here but variable has positive slope coef in model with other predictors
+fm1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend, data = RodentsP)
+fm2 <- lm(AgeatEyeOpeningd ~ BasalMetRatemLOhr*GestationLend, data=RodentsP)
+plotPoints(fm1$residuals ~ fm2$residuals, type=c("p", "r"), pch=19, alpha=0.3, cex=2, main="Added Variable Plot for AgeatEyeOpeningd")
+#not working because of different variable lengths?... plot models against each other?
+fm3 <- lm(fm1$residuals ~ fm2$residuals)
+```
+
+identifying unusual/influential pts
+```{r}
+plot(mod1,which=3)
+plot(mod1,which=4)
+plot(mod1,which=5)
+plot(mod1,which=6)
+```
+problematic pts in model seem to be 162, 256, 272
+
+```{r}
+RodentsP <- RodentsP[-c(162), ]
+RodentsP <- RodentsP[-c(256), ]
+RodentsP <- RodentsP[-c(272), ]
+plot(mod1, which=1)
+plot(mod1, which=2)
+```
+
+```{r}
+RodentsP <- mutate(RodentsP, MaxLongevitym.new=log(MaxLongevitym))
+mod2 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
+plot(mod2, which=1)
+plot(mod2, which=2)
+#log is bad, let's try sqrt
+RodentsP <- mutate(RodentsP, MaxLongevitym.new2=sqrt(MaxLongevitym))
+mod3 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
+plot(mod3, which=1)
+plot(mod3, which=2)
+#this didn't help
+```
+
+```{r}
+modsmall<-lm(MaxLongevitym~1,data=RodentsP)
+fmfull <- lm(MaxLongevitym ~ BasalMetRatemLOhr + GestationLend + AgeatEyeOpeningd + AdultBodyMassg + LitterSize + LittersPerYear + HuPopDenpnkm, data = RodentsP)
+#stepAIC(modsmall,scope=list(upper=fmfull, lower=~1), direction="both",trace=FALSE)$anova
 ```
 
 
@@ -56,7 +101,4 @@ set.seed(293)
 bootstrap <- do(1000) * lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend + AgeatEyeOpeningd, data=rodents2[mosaic::resample(1:nrow(rodents2)),])$coefficients
 densityplot(~BasalMetRatemLOhr, data=bootstrap)
 ladd(panel.abline(v=mod1$coefficients["BasalMetRatemLOhr"], col="red", lwd=3))
-
 ```
-
-
