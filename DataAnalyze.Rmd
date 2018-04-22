@@ -10,7 +10,6 @@ require(mosaic);require(leaps); require(car); require(MASS)
 ```
 
 ```{r}
-
 rodents3 <- as.numeric(rodents2[,()])
 
 #CHECK for multicollinearity
