@@ -38,18 +38,12 @@ names(X) <- str_replace_all(names(X),"[0. ]+", "")
 X[X==-999] <- "NA"
 Rodents <- X %>%
   filter(Order == "Rodentia")
-for (j in 6:length(Rodents)){
-  name <- names(Rodents[j])
-  rodents2<-mutate(Rodents,name=as.numeric(name))
-  }
-head(rodents2)
 ```
 
 
 ```{r}
 RodentsP <- Rodents[,6:length(Rodents)]
 RodentsP <- RodentsP[ ,!(colnames(RodentsP) == "References")]
-RodentsP <- RodentsP[ ,!(colnames(RodentsP) == "name")]
-RodentsP[, c(2:8,6:15,37)] <- sapply(dat[, c(3,6:15,37)], as.numeric)
+RodentsP[, c(2:8,10:25,28:49)] <- sapply(RodentsP[, c(2:8,10:25,28:49)], as.numeric)
 ```
 
