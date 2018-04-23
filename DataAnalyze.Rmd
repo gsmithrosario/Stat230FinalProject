@@ -19,6 +19,7 @@ rodnames <- c(names(RodentsP))
 #CHECK for multicollinearity.. do this
 #throw in the kitchen sink
 #not working??
+<<<<<<< HEAD
 
 #CHECK for multicollinearity
 fmeasy<-lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsP)
@@ -30,20 +31,24 @@ stepAIC(fit, direction="backward",trace=FALSE)$anova
 
 ```{r}
 fmfull<-lm(MaxLongevitym ~ ActivityCycle + AdultBodyMassg + AdultHeadBodyLenmm + AgeatEyeOpeningd + AgeatFirstBirthd + BasalMetRatemLOhr + BasalMetRateMassg + DietBreadth + GestationLend + HabitatBreadth + HomeRangekm + InterbirthIntervald + LitterSize + LittersPerYear + NeonateBodyMassg + PopulationDensitynkm + PopulationGrpSize + SexualMaturityAged + SocialGrpSize + TeatNumber + Terrestriality + TrophicLevel + WeaningAged + WeaningBodyMassg + GRAreakm + GRMaxLatdd + GRMinLatdd + GRMidRangeLatdd + GRMaxLongdd + GRMinLongdd + GRMidRangeLongdd + HuPopDenMinnkm + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + PrecipMeanmm + TempMeandegC + AETMeanmm + PETMeanmm,data=RodentsP)
+```
+
+```{r}
+fmfull <- lm(MaxLongevitym~PETMeanmm+AETMeanmm+TempMeandegC+PrecipMeanmm+HuPopDenChange+HuPopDenpnkm+HuPopDenMeannkm+HuPopDenMinnkm+GRMidRangeLongdd+GRMinLongdd+GRMaxLongdd+GRAreakm+GRMaxLatdd+GRMinLatdd+GRMidRangeLatdd,data=RodentsP)
+#CHECK for multicollinearity
 summary(fmfull)
 vif(fmfull)
 ```
 
 ```{r}
-ROD <- RodentsP
-RodentsP <- RodentsP[-c(1752), ] #is it worth taking this out.. normality condition gets really bad
-mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
+#RodentsP <- RodentsP[-c(1752), ] #is it worth taking this out.. normality condition gets really bad
+mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr+AgeatEyeOpeningd+LitterSize+GestationLend, data = RodentsP)
 mod1se <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend*AgeatEyeOpeningd, data = RodentsP)
 plot(mod1,which=1)
 plot(mod1,which=2)
 summary(mod1)
 anova(mod1)
-vif(mod1) #big vif??? what now
+vif(mod1) #big vifs??? what now... taking out BasalMetRatemLOhr leaves only 1 significant predictor at alpha=0.05 level
 ```
 
 ```{r}
@@ -66,6 +71,7 @@ fm2 <- lm(AgeatEyeOpeningd ~ BasalMetRatemLOhr*GestationLend, data=RodentsP)
 plotPoints(fm1$residuals ~ fm2$residuals, type=c("p", "r"), pch=19, alpha=0.3, cex=2, main="Added Variable Plot for AgeatEyeOpeningd")
 #not working because of different variable lengths?... plot models against each other?
 fm3 <- lm(fm1$residuals ~ fm2$residuals)
+length(fm2$residuals)
 ```
 
 identifying unusual/influential pts
@@ -87,12 +93,12 @@ plot(mod1, which=2)
 
 ```{r}
 RodentsP <- mutate(RodentsP, MaxLongevitym.new=log(MaxLongevitym))
-mod2 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
+mod2 <- lm(MaxLongevitym~BasalMetRatemLOhr+AgeatEyeOpeningd+LitterSize+GestationLend, data = RodentsP)
 plot(mod2, which=1)
 plot(mod2, which=2)
 #log is bad, let's try sqrt
 RodentsP <- mutate(RodentsP, MaxLongevitym.new2=sqrt(MaxLongevitym))
-mod3 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
+mod3 <- lm(MaxLongevitym~BasalMetRatemLOhr+AgeatEyeOpeningd+LitterSize+GestationLend, data = RodentsP)
 plot(mod3, which=1)
 plot(mod3, which=2)
 #this didn't help
@@ -100,10 +106,9 @@ plot(mod3, which=2)
 
 ```{r}
 modsmall<-lm(MaxLongevitym~1,data=RodentsP)
-fmfull <- lm(MaxLongevitym ~ BasalMetRatemLOhr + GestationLend + AgeatEyeOpeningd + AdultBodyMassg + LitterSize + LittersPerYear + HuPopDenpnkm, data = RodentsP)
-#stepAIC(modsmall,scope=list(upper=fmfull, lower=~1), direction="both",trace=FALSE)$anova
+fmfull <- lm(MaxLongevitym~PETMeanmm+AETMeanmm+TempMeandegC+PrecipMeanmm+HuPopDenChange+HuPopDenpnkm+HuPopDenMeannkm+HuPopDenMinnkm+GRMidRangeLongdd+GRMinLongdd+GRMaxLongdd+GRAreakm+GRMaxLatdd+GRMinLatdd+GRMidRangeLatdd,data=RodentsP)
+stepAIC(modsmall,scope=list(upper=fmfull, lower=~1), direction="both",trace=FALSE)$anova
 ```
-
 
 ```{r}
 confint(mod1)
@@ -112,7 +117,9 @@ confint(mod1)
 ```{r bootstrap}
 #Check if we really need BasalMetRatemLOhr in the model
 set.seed(293)
-bootstrap <- do(1000) * lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend + AgeatEyeOpeningd, data=rodents2[mosaic::resample(1:nrow(rodents2)),])$coefficients
+bootstrap <- do(1000) * lm(MaxLongevitym~BasalMetRatemLOhr+AgeatEyeOpeningd+LitterSize+GestationLend, data=RodentsP[mosaic::resample(1:nrow(RodentsP)),])$coefficients
 densityplot(~BasalMetRatemLOhr, data=bootstrap)
 ladd(panel.abline(v=mod1$coefficients["BasalMetRatemLOhr"], col="red", lwd=3))
+#two peaks due to the computer randomly finding two values due to NA's
+#yes, we still need BasalMetRatemLOhr in model .. 0 is in the tails
 ```
