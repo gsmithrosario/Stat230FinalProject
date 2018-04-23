@@ -11,20 +11,31 @@ require(mosaic);require(leaps); require(car); require(MASS)
 
 ```{r}
 summary(RodentsP)
+#Select only cols with fewer than 2000 NA's
+rodnames <- c(names(RodentsP))
 ```
 
 ```{r}
 #CHECK for multicollinearity.. do this
 #throw in the kitchen sink
 #not working??
-fmfull <- lm(MaxLongevitym~.,data=RodentsP)
+
 #CHECK for multicollinearity
-fmfull<-lm(MaxLongevitym ~ ActivityCycle + AdultBodyMassg + AdultHeadBodyLenmm + AgeatEyeOpeningd + BasalMetRatemLOhr + BasalMetRateMassg + DietBreadth + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + PopulationGrpSize + SexualMaturityAged + TeatNumber + Terrestriality + TrophicLevel + WeaningAged + HuPopDenMinnkm + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + PrecipMeanmm + TempMeandegC + AETMeanmm + PETMeanmm,data=RodentsP)
+fmeasy<-lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsP)
+summary(fmeasy)
+vif(fmeasy)
+fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=na.omit(RodentsP))
+stepAIC(fit, direction="backward",trace=FALSE)$anova
+```
+
+```{r}
+fmfull<-lm(MaxLongevitym ~ ActivityCycle + AdultBodyMassg + AdultHeadBodyLenmm + AgeatEyeOpeningd + AgeatFirstBirthd + BasalMetRatemLOhr + BasalMetRateMassg + DietBreadth + GestationLend + HabitatBreadth + HomeRangekm + InterbirthIntervald + LitterSize + LittersPerYear + NeonateBodyMassg + PopulationDensitynkm + PopulationGrpSize + SexualMaturityAged + SocialGrpSize + TeatNumber + Terrestriality + TrophicLevel + WeaningAged + WeaningBodyMassg + GRAreakm + GRMaxLatdd + GRMinLatdd + GRMidRangeLatdd + GRMaxLongdd + GRMinLongdd + GRMidRangeLongdd + HuPopDenMinnkm + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + PrecipMeanmm + TempMeandegC + AETMeanmm + PETMeanmm,data=RodentsP)
 summary(fmfull)
 vif(fmfull)
 ```
 
 ```{r}
+ROD <- RodentsP
 RodentsP <- RodentsP[-c(1752), ] #is it worth taking this out.. normality condition gets really bad
 mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
 mod1se <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend*AgeatEyeOpeningd, data = RodentsP)
