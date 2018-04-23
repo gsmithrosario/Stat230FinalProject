@@ -10,7 +10,6 @@ require(mosaic);require(leaps); require(car); require(MASS)
 ```
 
 ```{r}
-<<<<<<< HEAD
 summary(RodentsP)
 ```
 
@@ -19,21 +18,16 @@ summary(RodentsP)
 #throw in the kitchen sink
 #not working??
 fmfull <- lm(MaxLongevitym~.,data=RodentsP)
-=======
 #CHECK for multicollinearity
 fmfull<-lm(MaxLongevitym ~ ActivityCycle + AdultBodyMassg + AdultHeadBodyLenmm + AgeatEyeOpeningd + BasalMetRatemLOhr + BasalMetRateMassg + DietBreadth + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + PopulationGrpSize + SexualMaturityAged + TeatNumber + Terrestriality + TrophicLevel + WeaningAged + HuPopDenMinnkm + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + PrecipMeanmm + TempMeandegC + AETMeanmm + PETMeanmm,data=RodentsP)
->>>>>>> 5a222f2dbb766f3c6a7de3beb5b591cdbc3b306d
 summary(fmfull)
 vif(fmfull)
 ```
 
 ```{r}
-<<<<<<< HEAD
 RodentsP <- RodentsP[-c(1752), ] #is it worth taking this out.. normality condition gets really bad
 mod1 <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend+AgeatEyeOpeningd, data = RodentsP)
-=======
 mod1se <- lm(MaxLongevitym~BasalMetRatemLOhr*GestationLend*AgeatEyeOpeningd, data = RodentsP)
->>>>>>> 5a222f2dbb766f3c6a7de3beb5b591cdbc3b306d
 plot(mod1,which=1)
 plot(mod1,which=2)
 summary(mod1)
