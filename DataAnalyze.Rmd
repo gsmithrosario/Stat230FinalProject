@@ -19,13 +19,14 @@ rodnames <- c(names(RodentsP))
 #CHECK for multicollinearity.. do this
 #throw in the kitchen sink
 #not working??
-<<<<<<< HEAD
 
 #CHECK for multicollinearity
 fmeasy<-lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsP)
 summary(fmeasy)
 vif(fmeasy)
-fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=na.omit(RodentsP))
+collist <- c("MaxLongevitym", "AdultBodyMassg", "GestationLend", "HabitatBreadth", "LitterSize", "LittersPerYear", "PopulationDensitynkm", "SexualMaturityAged", "WeaningAged", "HuPopDenMeannkm", "HuPopDenpnkm", "HuPopDenChange", "TempMeandegC")
+RodentsSelect <- RodentsP[complete.cases(RodentsP[collist]), collist]
+fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsSelect)
 stepAIC(fit, direction="backward",trace=FALSE)$anova
 ```
 
