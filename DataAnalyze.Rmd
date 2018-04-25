@@ -28,10 +28,10 @@ collist <- c("MaxLongevitym", "AdultBodyMassg", "GestationLend", "HabitatBreadth
 RodentsSelect <- RodentsP[complete.cases(RodentsP[collist]), collist]
 fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsSelect)
 stepAIC(fit, direction="backward",trace=FALSE)$anova
-```
-
-```{r}
-fmfull<-lm(MaxLongevitym ~ ActivityCycle + AdultBodyMassg + AdultHeadBodyLenmm + AgeatEyeOpeningd + AgeatFirstBirthd + BasalMetRatemLOhr + BasalMetRateMassg + DietBreadth + GestationLend + HabitatBreadth + HomeRangekm + InterbirthIntervald + LitterSize + LittersPerYear + NeonateBodyMassg + PopulationDensitynkm + PopulationGrpSize + SexualMaturityAged + SocialGrpSize + TeatNumber + Terrestriality + TrophicLevel + WeaningAged + WeaningBodyMassg + GRAreakm + GRMaxLatdd + GRMinLatdd + GRMidRangeLatdd + GRMaxLongdd + GRMinLongdd + GRMidRangeLongdd + HuPopDenMinnkm + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + PrecipMeanmm + TempMeandegC + AETMeanmm + PETMeanmm,data=RodentsP)
+reducedmod <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + LitterSize + SexualMaturityAged + WeaningAged + HuPopDenChange, data = RodentsP)
+cor.test(reduc)
+summary(reducedmod)
+vif(reducedmod)
 ```
 
 ```{r}
