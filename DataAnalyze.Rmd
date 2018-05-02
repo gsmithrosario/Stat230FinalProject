@@ -5,103 +5,145 @@ date: "4/15/2018"
 output: html_document
 ---
 
+
+Packages
 ```{r, include=FALSE}
 require(mosaic);require(leaps); require(car); require(MASS); require(ggplot2)
 ```
 
+
+Data Read in
+```{r}
+RodentsP <- read.csv("U://Stat 230 - Intermediate Statistics//Spring 2018//Projects//Datasets//groupDdata.csv", row.names=FALSE)
+```
+
+Summary of RodentsP data set
 ```{r}
 summary(RodentsP)
 ```
+This is a summary of the data set, which allows us to see how many missing values are present in each of the variables. With this, we can pick which variables to include in the full model by choosing those with the least missing values.
 
+
+Creating full model
 ```{r}
-#CHECK for multicollinearity
-#throw in the kitchen sink
-
-fullmodel<-lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsP)
+fullmodel <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data = RodentsP)
 summary(fullmodel)
 vif(fullmodel)
+```
+We made our model include as many predictors as possible without getting an error with the stepwise regression procedure, which does not work when there are overlapping missing values. The summary of the full model shows only three significant predictors at the alpha=0.01 level of longevity in rodents: AdultBodyMassg, LitterSize, and WeaningAged. Despite the fact that the full model has only several statistically significant slope values, the Adjusted R-squared is relatively high at 0.6022. Additionally, with a F-value of 6.425 and a p-value of 1.454 x 10^-5 being below the alpha = 0.05 significance level, we reject the null hypothesis and can conclude that the model is useful overall. Additionally, the Variance Inflation Factors are below four for each of the predictors in the full model, so we can assume there is negligible multicollinearity.
 
+
+Creating new data set "RodentsSelect" with missing observations removed
+```{r}
 collist <- c("MaxLongevitym", "AdultBodyMassg", "GestationLend", "HabitatBreadth", "LitterSize", "LittersPerYear", "PopulationDensitynkm", "SexualMaturityAged", "WeaningAged", "HuPopDenMeannkm", "HuPopDenpnkm", "HuPopDenChange", "TempMeandegC")
 
 RodentsSelect <- RodentsP[complete.cases(RodentsP[collist]), collist]
-
-fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data=RodentsSelect)
-stepAIC(fit, direction="backward",trace=FALSE)$anova
 ```
+Here, we assigned the variables being used in our full model, and selected only the cells with values entered in them. By eliminating the cells with missing values from our analysis, we could do a stepwise regression procedure. We used our new data set without any missing values, RodentsSelect, to conduct a stepwise regression procedure in order to choose the best variables to include in our fitted model.
 
 
+Stepwise regression on RodentsSelect data set
 ```{r}
-mod1 <- lm(MaxLongevitym ~ AdultBodyMassg + LitterSize + WeaningAged + HuPopDenChange, data = RodentsP)
-plot(mod1,which=1)
-plot(mod1,which=2)
+fit <- lm(MaxLongevitym ~ AdultBodyMassg + GestationLend + HabitatBreadth + LitterSize + LittersPerYear + PopulationDensitynkm + SexualMaturityAged + WeaningAged + HuPopDenMeannkm + HuPopDenpnkm + HuPopDenChange + TempMeandegC, data = RodentsSelect)
+stepAIC(fit, direction = "both", trace = FALSE)$anova
+```
+The model "fit" is essentially a full model with the data from the RodentsSelect data set, which has no missing values. This is the model on which we conducted the stepwise regression procedure. 
+
+
+Fitted model with predictors chosen from stepwise regression
+```{r}
+mod1 <- lm(MaxLongevitym ~ AdultBodyMassg + LitterSize + WeaningAged + HuPopDenChange + GestationLend + SexualMaturityAged, data = RodentsP)
+plot(mod1, which = 1)
+plot(mod1, which = 2)
 summary(mod1)
 anova(mod1)
 vif(mod1) 
 ```
-no multicollinearity
+The stepwise regression procedure shows that the best predictors for rodent longevity are adult body mass, litter size, weaning age, human population density chance, gestation length and sexual maturity age. The conditions for constant variance of residuals and normality of errors are satisfied because the points on the QQ plot are on the line and the residual -vs- fitted plot shows random scatter. All the predictors except for adult body mass and human population density change are significant at the alpha=0.1 significance level in the model for predicting longevity in rodents. The One-Way ANOVA test shows that all of the predictors significantly improve the model at the alpha=0.05 significance level. Since each of the predictors in the fitted model has a Variance Inflation Factor below four, there is minimal multicollinearity present in the model.
 
+
+SLR for each of the predictors individually against maximum longevity, our response
 ```{r}
-xyplot(MaxLongevitym ~ AdultBodyMassg, type=c("p","r"),data=RodentsP)
-```
+xyplot(MaxLongevitym ~ AdultBodyMassg, type = c("p", "r"), main = "Scatterplot of Adult Body Mass (grams) and Rodent Longevity", data = RodentsP)
 
-```{r}
-xyplot(MaxLongevitym ~ LitterSize, type=c("p","r"), data=RodentsP)
-```
+xyplot(MaxLongevitym ~ LitterSize, type = c("p", "r"), main = "Scatterplot of Litter Size and Rodent Longevity", data = RodentsP)
 
-```{r}
-xyplot(MaxLongevitym ~ WeaningAged, type=c("p","r"), data=RodentsP)
-```
-
+<<<<<<< HEAD
 ```{r}
 xyplot(MaxLongevitym ~ (HuPopDenChange)^(1/4), type=c("p","r"), data=RodentsP)
-```
+=======
+xyplot(MaxLongevitym ~ WeaningAged, type = c("p", "r"), main = "Scatterplot of Weaning Age (days) and Rodent Longevity", data = RodentsP)
 
+xyplot(MaxLongevitym ~ HuPopDenChange, type = c("p", "r"), main = "Scatterplot of Human Population Density Change from 1990 to 1995 and Rodent Longevity", data = RodentsP)
+xyplot(MaxLongevitym ~ sqrt(HuPopDenChange), type = c("p", "r"), main = "Scatterplot of Human Population Density Change from 1990 to 1995 and Rodent Longevity", data = RodentsP)
+xyplot(MaxLongevitym ~ log(HuPopDenChange), type = c("p", "r"), main = "Scatterplot of Human Population Density Change from 1990 to 1995 and Rodent Longevity", data = RodentsP)
+xyplot(MaxLongevitym ~ (HuPopDenChange)^(1/4), type = c("p", "r"), main = "Scatterplot of Human Population Density Change from 1990 to 1995 and Rodent Longevity", data = RodentsP)
+
+xyplot(MaxLongevitym ~ GestationLend, type = c("p", "r"), main = "Scatterplot of Gestation Length (days) and Rodent Longevity", data= RodentsP)
+
+xyplot(MaxLongevitym ~ SexualMaturityAged, type = c("p", "r"), main = "Scatterplot of Sexual Maturity Age (days) and Rodent Longevity", data = RodentsP)
+>>>>>>> 82dd24333bb809f8fcf18f385172086d14132270
+```
+We made scatterplots of each of rodent longevity against each of the predictors. Each of the predictors seemed to have a moderate linear relationship to rodent longevity. Adult body mass, weaning age, gestation length, and sexual maturity age had a positive correlation to longevity in rodents, while litter size had a negative correlation to longevity of rodents. The predictor for the change in human population density between 1990 and 1995 showed essentially a vertical line. We transformed this predictor, and found that plotting the quartic root of HuPopDenChange against showed a weak, positive and linear correlation. 
+
+
+Added Variable Plot for Change in Human Population Density from 1990 to 1995
 ```{r}
-#Do we need HuPopDenChange?
-fm1 <- lm(MaxLongevitym~HuPopDenChange, data = RodentsP)
-fm2 <- lm(HuPopDenChange ~ AdultBodyMassg + LitterSize + WeaningAged, data=RodentsP)
-plotPoints(fm1$residuals ~ fm2$residuals, type=c("p", "r"), pch=19, alpha=0.3, cex=2, main="Added Variable Plot for HuPopDenChange")
+fm1 <- lm(MaxLongevitym ~ HuPopDenChange, data = RodentsP)
+fm2 <- lm(HuPopDenChange ~ AdultBodyMassg + LitterSize + WeaningAged + GestationLend + SexualMaturityAged, data = RodentsP)
+plotPoints(fm1$residuals ~ fm2$residuals, type = c("p", "r"), pch=19, alpha=0.3, cex=2, main = "Added Variable Plot for Change in Human Population Density from 1990 to 1995")
 ```
+Due to the positive correlation between HuPopDenChange and MaxLongevitym independently but the negative slope coefficient of HuPopDenChange in the full model, we decided to investigate whether it was necessary in the full model. To do so, we created an added variable plot, which shows almost a horizontal line, meaning the predictor does not add any unique information to the model.
 
+
+Bootstrap procedure for Change in Human Population Density from 1990 to 1995
 ```{r bootstrap}
-#Check if we really need HuPopDenChange in the model
-bootstrap <- do(1000) * lm(MaxLongevitym~AdultBodyMassg + LitterSize + WeaningAged + HuPopDenChange, data=RodentsP[resample(1:nrow(RodentsP)),])$coefficients
-densityplot(~HuPopDenChange, data=bootstrap)
+bootstrap <- do(1000) * lm(MaxLongevitym ~ AdultBodyMassg + LitterSize + WeaningAged + HuPopDenChange + GestationLend + SexualMaturityAged, data = RodentsP[resample(1:nrow(RodentsP)),])$coefficients
+densityplot(~ HuPopDenChange, data = bootstrap)
 
-ladd(panel.abline(v=mod1$coefficients["HuPopDenChange"], col="red", lwd=3))
+ladd(panel.abline(v = mod1$coefficients["HuPopDenChange"], col = "red", lwd = 3))
 
 c(mod1$coefficients["HuPopDenChange"] - 1.96 * sd(bootstrap$HuPopDenChange), mod1$coefficients["HuPopDenChange"] + 1.96 * sd(bootstrap$HuPopDenChange))
 ```
-probably take out HupopDenchange
+In order to make sure this assumption was correct, we conducted a bootstrap procedure for HuPopDenChange in the fitted modl. With the interval from -302.12499 to 22.96399 capturing zero, we can take HuPopDenChange out of the model because the true slope is not significantly different from zero.
 
+
+Added Variable Plot for Adult Body Mass (grams)
 ```{r}
-mod2<-lm(MaxLongevitym~AdultBodyMassg + LitterSize + WeaningAged, data = RodentsP)
+fm3 <- lm(MaxLongevitym ~ AdultBodyMassg, data = RodentsP)
+fm4 <- lm(AdultBodyMassg ~ LitterSize + WeaningAged + GestationLend + SexualMaturityAged, data = RodentsP)
+plotPoints(fm3$residuals ~ fm4$residuals, type = c("p", "r"), pch = 19, alpha = 0.3, cex = 2, main = "Added Variable Plot for Adult Body Mass (grams)")
+```
+Since the predictor for Adult Body Mass of the rodent was not statistically significant in the fitted model, we also decided to create an added variable plot to see if it was necessary. The slope is not zero, so AdultBodyMassg adds unique information to the model not shown from the other predictors.
+
+
+Final model and anlaysis
+```{r}
+mod2 <- lm(MaxLongevitym ~ AdultBodyMassg + LitterSize + WeaningAged + GestationLend + SexualMaturityAged, data = RodentsP)
 summary(mod2)
 anova(mod2)
 vif(mod2)
 confint(mod2)
 ```
-good!!
+Our final model included the same predictors as the first fitted model with the exception of HuPopDenChange, which we showed was likely not necessary in the model due to the line on the Added Variable Plot for HuPopDenChange being nearly horizontal and zero being captured in the interval of the bootstrap sample. In our final model, both the confidence intervals, which all fail to capture zero, and summary output, which shows significance at the alpha = 0.05 significance level, show that the WeaningAged, GestationLend and SexualMaturityAged are significant in the model predicting rodent longevity. The Adjusted R-squared here, 0.5871, is slightly lower than that of the full model and first fitted model. The model utility test, with an F-statistic of 31.43 and a p-value of 2.2 x 10^-16 being below the alpha = 0.05 significance level, show that the model is overall useful. Additionally, the One-Way ANOVA test shows that each predictor in the model significantly improves the model at the alpha = 0.001 significance level. With the Variance Inflation Factors of each predictor being below four, there are no problems present with multicollinearity.
 
-general conditions:
-```{r}
-plot(mod2, which=1)
-plot(mod2, which=2)
-```
 
-identifying unusual/influential pts
+Conditions for final fitted model
 ```{r}
-plot(mod2,which=3)
-plot(mod2,which=4)
-plot(mod2,which=5)
-plot(mod2,which=6)
+plot(mod2, which = 1)
+plot(mod2, which = 2)
 ```
-problematic pt in model seem to be 237
+The points on the Residual -vs- Fitted Plot show random scatter, so the constant variance of the residuals condition is satisfied. Likewise, the points on the QQ Plot are generally on the line, so the normality of the errors condition is also satisfied.
 
+
+Checking for influential points
 ```{r}
-mplot(RodentsP)
+plot(mod2, which = 3)
+plot(mod2, which = 4)
+plot(mod2, which = 5)
+plot(mod2, which = 6)
 ```
-ggplot( data = RodentsP, aes(x = HuPopDenChange)) + geom_histogram(binwidth = 0.04) + aes(colour = ActivityCycle) + labs(title = "")
+In order to examine influential points in our final model, we constructed several plots that investigated Cook's Distance and Leverage. The Cook's Distance Plot shows that point 627 has a Cook's distance over 6, which, being greater than 1, means the point is likely highly influential. Each of these plots show that point 627 is problematic, so it likely has a large influence on the regression line.
 
 
 ```{r}

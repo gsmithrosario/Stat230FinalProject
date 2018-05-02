@@ -1,0 +1,53 @@
+---
+title: "Group D Data Read-In"
+author: "Gabi Smith-Rosario"
+date: "March 29, 2018"
+
+output:
+  pdf_document:
+    fig_height: 2.8
+    fig_width: 5
+  html_document:
+    fig_height: 5
+    fig_width: 7
+  word_document:
+    fig_height: 3
+    fig_width: 5
+    
+---
+
+```{r, setup, include=FALSE}
+library(mdsr)   # Load additional packages here 
+library(tidyr)
+library(readr)
+library(tm)
+library(wordcloud)
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+```{r message=FALSE, warning=FALSE}
+X <- read.csv(url("http://esapubs.org/archive/ecol/E090/184/PanTHERIA_1-0_WR05_Aug2008.txt"),  sep="\t")
+names(X) <- str_replace_all(names(X),"MSW05_","")
+names(X) <- str_replace_all(names(X), "_"," ")
+names(X) <- str_replace_all(names(X),"^X|[1-9]?", "")
+names(X) <- str_replace_all(names(X),"^[0. ]+", "")
+names(X) <- str_replace_all(names(X),"[0. ]+", "")
+X[X==-999] <- "NA"
+Rodents <- X %>%
+  filter(Order == "Rodentia")
+for (j in 6:length(Rodents)){
+  name <- names(Rodents[j])
+  rodents2<-mutate(Rodents,name=as.numeric(name))
+  }
+head(rodents2)
+```
+
+
+
+```{r}
+write.csv(rodents2,"U://Stat 230 - Intermediate Statistics//Spring 2018//Projects//Datasets//groupDdata.csv", row.names=FALSE)
+```
+

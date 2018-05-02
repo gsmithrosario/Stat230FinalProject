@@ -15,7 +15,7 @@ server <- function(input, output, session) {
   dat <- reactive(RodentsP[1:input$myslider,])
   
   output$myplot <- renderPlotly({
-    p <- ggplot(dat(), aes(MaxLongevitym, AdultBodyMassg)) + geom_point(color="purple")
+    p <- ggplot(dat(), aes(AdultBodyMassg, MaxLongevitym)) + geom_point(color="purple")
     p <- ggplotly(p)
     p
   })
