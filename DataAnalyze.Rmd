@@ -68,10 +68,6 @@ xyplot(MaxLongevitym ~ AdultBodyMassg, type = c("p", "r"), main = "Scatterplot o
 
 xyplot(MaxLongevitym ~ LitterSize, type = c("p", "r"), main = "Scatterplot of Litter Size and Rodent Longevity", data = RodentsP)
 
-<<<<<<< HEAD
-```{r}
-xyplot(MaxLongevitym ~ (HuPopDenChange)^(1/4), type=c("p","r"), data=RodentsP)
-=======
 xyplot(MaxLongevitym ~ WeaningAged, type = c("p", "r"), main = "Scatterplot of Weaning Age (days) and Rodent Longevity", data = RodentsP)
 
 xyplot(MaxLongevitym ~ HuPopDenChange, type = c("p", "r"), main = "Scatterplot of Human Population Density Change from 1990 to 1995 and Rodent Longevity", data = RodentsP)
@@ -82,7 +78,6 @@ xyplot(MaxLongevitym ~ (HuPopDenChange)^(1/4), type = c("p", "r"), main = "Scatt
 xyplot(MaxLongevitym ~ GestationLend, type = c("p", "r"), main = "Scatterplot of Gestation Length (days) and Rodent Longevity", data= RodentsP)
 
 xyplot(MaxLongevitym ~ SexualMaturityAged, type = c("p", "r"), main = "Scatterplot of Sexual Maturity Age (days) and Rodent Longevity", data = RodentsP)
->>>>>>> 82dd24333bb809f8fcf18f385172086d14132270
 ```
 We made scatterplots of each of rodent longevity against each of the predictors. Each of the predictors seemed to have a moderate linear relationship to rodent longevity. Adult body mass, weaning age, gestation length, and sexual maturity age had a positive correlation to longevity in rodents, while litter size had a negative correlation to longevity of rodents. The predictor for the change in human population density between 1990 and 1995 showed essentially a vertical line. We transformed this predictor, and found that plotting the quartic root of HuPopDenChange against showed a weak, positive and linear correlation. 
 
