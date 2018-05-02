@@ -53,7 +53,7 @@ xyplot(MaxLongevitym ~ WeaningAged, type=c("p","r"), data=RodentsP)
 ```
 
 ```{r}
-xyplot(MaxLongevitym ~ HuPopDenChange, type=c("p","r"), data=RodentsP)
+xyplot(MaxLongevitym ~ (HuPopDenChange)^(1/4), type=c("p","r"), data=RodentsP)
 ```
 
 ```{r}
@@ -103,3 +103,7 @@ mplot(RodentsP)
 ```
 ggplot( data = RodentsP, aes(x = HuPopDenChange)) + geom_histogram(binwidth = 0.04) + aes(colour = ActivityCycle) + labs(title = "")
 
+
+```{r}
+RodentName <- left_join(RodentsP, Rodents, by = "ActivityCycle")
+```
