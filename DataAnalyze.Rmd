@@ -14,10 +14,15 @@ require(mosaic);require(leaps); require(car); require(MASS); require(ggplot2)
 
 Data Read in
 ```{r}
-RodentsP <- read.csv("U://Stat 230 - Intermediate Statistics//Spring 2018//Projects//Datasets//groupDdata.csv", row.names=FALSE)
+Rodents <- read.csv("https://awagaman.people.amherst.edu/stat230/projectsS18/groupDdataS18.csv")
+RodentsP <- Rodents[,6:length(Rodents)]
+RodentsP <- RodentsP[ ,!(colnames(RodentsP) == "References")]
+RodentsP[, c(2:8,10:25,28:49)] <- sapply(RodentsP[, c(2:8,10:25,28:49)], as.numeric)
 ```
 
+
 Summary of RodentsP data set
+
 ```{r}
 summary(RodentsP)
 ```
