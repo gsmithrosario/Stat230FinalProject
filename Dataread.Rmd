@@ -47,3 +47,6 @@ RodentsP <- RodentsP[ ,!(colnames(RodentsP) == "References")]
 RodentsP[, c(2:8,10:25,28:49)] <- sapply(RodentsP[, c(2:8,10:25,28:49)], as.numeric)
 ```
 
+```{r}
+write.csv(RodentsP,"U://Stat 230 - Intermediate Statistics//Spring 2018//Projects//Datasets//groupDdata.csv", row.names=FALSE)
+```
